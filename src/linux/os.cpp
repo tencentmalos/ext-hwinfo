@@ -48,9 +48,16 @@ OS::OS() {
     }
   }
   {  // architecture
+#if defined(__ANDROID__)
+    // Android uses bionic, not the desktop x86 glibc interpreter below.
+    // Report the native host process ABI, including arm64 and x86_64.
+    _64bit = sizeof(void*) == 8;
+    _32bit = sizeof(void*) == 4;
+#else
     struct stat buffer {};
     _64bit = stat("/lib64/ld-linux-x86-64.so.2", &buffer) == 0;
     _32bit = !_64bit;
+#endif
   }
   {  // Get endian. This is platform independent...
     char16_t dummy = 0x0102;
